@@ -26,86 +26,86 @@ bool isConnected = false;
 
 // the setup function runs once when you press reset or power the board
 void setup() {
-  Serial.begin(115200);
-  delay(1000);
-  Serial.println("meep");
-  delay(1000);
-  Serial.println("meep");
-
-  Serial.print(F("Bluefruit Feather: "));
-
-  if ( !ble.begin(VERBOSE_MODE) ) {
-    error(F("Couldn't find Bluefruit, check wiring?"));
-  }
-  Serial.println( F("OK!") );
-
-  if ( FACTORYRESET_ENABLE ) {
-    /* Perform a factory reset to make sure everything is in a known state */
-    Serial.println(F("Performing a factory reset: "));
-    if ( ! ble.factoryReset() ) {
-      error(F("Couldn't factory reset"));
-    }
-  }
-
-  ble.echo(false);
-
-  Serial.println("Requesting Bluefruit info:");
-  /* Print Bluefruit information */
-  ble.info();
-  
-  /* Set BLE callbacks */
-  Serial.println("callback 1...");
-  ble.setConnectCallback(connected);
-  Serial.println("allback 2...");
-  ble.setDisconnectCallback(disconnected);
-  Serial.println("callbacks done");
-  
-  Serial.println(F("Enable MIDI: "));
-  
-  if ( ! midi.begin(true) ) {
-    error(F("Could not enable MIDI"));
-  }
-    
-  ble.verbose(false);
-  Serial.print(F("Waiting for a connection..."));
-  while(!isConnected) {
-    ble.update(500);
-  }
-  
-  //// Set all LED pins to output mode and turn on
-  //// From https://learn.adafruit.com/mad-science-test-tube-rack
-//  for (byte i = 0; i < sizeof(LED_PINS)/sizeof(LED_PINS[0]); i++){
-//    pinMode(LED_PINS[i], OUTPUT);
-//    digitalWrite(LED_PINS[i], LOW);
+//  Serial.begin(115200);
+//  delay(1000);
+//  Serial.println("meep");
+//  delay(1000);
+//  Serial.println("meep");
+//
+//  Serial.print(F("Bluefruit Feather: "));
+//
+//  if ( !ble.begin(VERBOSE_MODE) ) {
+//    error(F("Couldn't find Bluefruit, check wiring?"));
 //  }
+//  Serial.println( F("OK!") );
+//
+//  if ( FACTORYRESET_ENABLE ) {
+//    /* Perform a factory reset to make sure everything is in a known state */
+//    Serial.println(F("Performing a factory reset: "));
+//    if ( ! ble.factoryReset() ) {
+//      error(F("Couldn't factory reset"));
+//    }
+//  }
+//
+//  ble.echo(false);
+//
+//  Serial.println("Requesting Bluefruit info:");
+//  /* Print Bluefruit information */
+//  ble.info();
+//  
+//  /* Set BLE callbacks */
+//  Serial.println("callback 1...");
+//  ble.setConnectCallback(connected);
+//  Serial.println("allback 2...");
+//  ble.setDisconnectCallback(disconnected);
+//  Serial.println("callbacks done");
+//  
+//  Serial.println(F("Enable MIDI: "));
+//  
+//  if ( ! midi.begin(true) ) {
+//    error(F("Could not enable MIDI"));
+//  }
+//    
+//  ble.verbose(false);
+//  Serial.print(F("Waiting for a connection..."));
+//  while(!isConnected) {
+//    ble.update(500);
+//  }
+  
+  // Set all LED pins to output mode and turn on
+  // From https://learn.adafruit.com/mad-science-test-tube-rack
+  for (byte i = 0; i < sizeof(LED_PINS)/sizeof(LED_PINS[0]); i++){
+    pinMode(LED_PINS[i], OUTPUT);
+    digitalWrite(LED_PINS[i], LOW);
+  }
 
 //  for (byte i = 0; i < sizeof(SWITCH_PINS)/sizeof(SWITCH_PINS[0]); i++){
 //
 //  }
 }
 
-//// the loop function runs over and over again forever
-//void loop() {
-//  Serial.println(current_led);
-//  for (byte j = 0; j < sizeof(LED_PINS)/sizeof(LED_PINS[0]); j++) {
-//    digitalWrite(LED_PINS[j], LOW);
-//  }
-//  digitalWrite(LED_PINS[current_led], HIGH);
-//  delay(1000);
-//  current_led = (current_led + 1) % 4;
-//}
-
-void loop()
-{
-  pot_val = analogRead(POT_PIN);
-
-  pot_cc = pot_val * 127 / POT_MAX;
-  if (pot_cc != last_pot_sent) {
-     Serial.println(pot_cc);
-     last_pot_sent = pot_cc; 
+// the loop function runs over and over again forever
+void loop() {
+  Serial.println(current_led);
+  for (byte j = 0; j < sizeof(LED_PINS)/sizeof(LED_PINS[0]); j++) {
+    digitalWrite(LED_PINS[j], LOW);
   }
-  delay(100);
+  digitalWrite(LED_PINS[current_led], HIGH);
+  delay(1000);
+  current_led = (current_led + 1) % 4;
 }
+
+//void loop()
+//{
+//  pot_val = analogRead(POT_PIN);
+//
+//  pot_cc = pot_val * 127 / POT_MAX;
+//  if (pot_cc != last_pot_sent) {
+//     Serial.println(pot_cc);
+//     last_pot_sent = pot_cc; 
+//  }
+//  delay(100);
+//}
 
 
 void error(const __FlashStringHelper*err) {
