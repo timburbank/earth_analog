@@ -19,9 +19,12 @@ byte LED_PINS[4] = {13, 12, 11, 10};
 byte SWITCH_CC[4] = {20, 21, 22, 23};
 
 bool switchState[4] = {false, false, false, false};
+bool signalSent[4] = {false, false, false, false};
+unsigned long switchTime[4] = {0, 0, 0, 0};
+unsigned long currentTime;
 
 //// Metronome tracking
-int ppqn = 0;
+int ppqn = 0; 
 int beat = 0;
 bool clockActive = false;
 
@@ -33,12 +36,15 @@ void setup() {
   for (byte i = 0; i < sizeof(SWITCH_PINS)/sizeof(SWITCH_PINS[0]); i++) {
     pinMode(SWITCH_PINS[i], INPUT);
   }
+//  Serial.begin(115200);
+//  Serial.print('meep');
 }
 
 
 void loop() {
-  midiEventPacket_t rx;
 
+  /* Read clock signals and calculate beats */
+  midiEventPacket_t rx;
   //// Do while...makes sure all MIDI messages are read before continuing?
   do {
     rx = MidiUSB.read();
@@ -51,6 +57,11 @@ void loop() {
           if (beat >= MEASURE_BEATS) {
             beat = 0;
             lightsOff();
+            //// I think we can initialize array to zero as per
+            //// https://stackoverflow.com/a/4066536/5266110
+            for (byte i = 0; i < sizeof(switchState)/sizeof(switchState[0]); i++) {
+              switchState[i] = false;
+            }
           }
           MidiUSB.flush();      
           ppqn = 0;
@@ -71,19 +82,26 @@ void loop() {
     }
     
   } while (rx.header != 0);
-  
+
+  /* Listen for switch changes and send CCs */
+  //// switchState is used here to make sure the switch only registers 
+  //// once each time it's pressed
+  //// switchTime ensures a delay after the last switch event to prevent
+  //// multiple on/off events with every switch push
   for (byte i = 0; i < sizeof(SWITCH_PINS)/sizeof(SWITCH_PINS[0]); i++) {
     if (digitalRead(SWITCH_PINS[i]) == HIGH) {
-      //// Only send one CC event when switch is pressed
-      if (!switchState[i]) {
+      if (!switchState[i] && currentTime > switchTime[i] + 10) {
         switchState[i] = true;
+        switchTime[i] = millis();
         controlChange(MIDI_CHANNEL, SWITCH_CC[i], 127);
         digitalWrite(LED_PINS[i], HIGH);
       }
-    }
+    } 
     else {
-      if (switchState[i]) {
+      currentTime = millis();
+      if (switchState[i] && currentTime > switchTime[i] + 100) { //// if switchState
         switchState[i] = false;
+        switchTime[i] = millis();
         controlChange(MIDI_CHANNEL, SWITCH_CC[i], 0);
         if (!clockActive) {
           digitalWrite(LED_PINS[i], LOW);
@@ -108,5 +126,18 @@ void lightsOff() {
 void controlChange(byte channel, byte control, byte value) {
   midiEventPacket_t event = {CONTROL_CHANGE, 0xB0 | channel, control, value};
   MidiUSB.sendMIDI(event);
+  MidiUSB.flush();
+}
+
+void noteOn(byte channel, byte pitch, byte velocity) {
+  midiEventPacket_t noteOn = {0x09, 0x90 | channel, pitch, velocity};
+  MidiUSB.sendMIDI(noteOn);
+  MidiUSB.flush();
+}
+
+void noteOff(byte channel, byte pitch, byte velocity) {
+  midiEventPacket_t noteOff = {0x08, 0x80 | channel, pitch, velocity};
+  MidiUSB.sendMIDI(noteOff);
+  MidiUSB.flush();
 }
 
