@@ -12,16 +12,27 @@
 #define NOTE_OFF 0x8
 
 #define MEASURE_BEATS 4
-#define MIDI_CHANNEL 1
+#define MIDI_CHANNEL 0
+#define POT_PIN A4
+#define POT_MIN 0
+#define POT_MAX 1023
+#define POT_CC 1
 
 byte SWITCH_PINS[4] = {A0, A1, A2, A3};
 byte LED_PINS[4] = {13, 12, 11, 10};
 byte SWITCH_CC[4] = {20, 21, 22, 23};
 
+//// Switch vars
 bool switchState[4] = {false, false, false, false};
 bool signalSent[4] = {false, false, false, false};
 unsigned long switchTime[4] = {0, 0, 0, 0};
 unsigned long currentTime;
+
+//// Pot vars 
+char last_pot_sent = 0;
+byte current_led = 0;
+long pot_val = 0; // this long might just be needed for implicit casting of result
+long pot_cc_val = 0;
 
 //// Metronome tracking
 int ppqn = 0; 
@@ -108,6 +119,15 @@ void loop() {
         }
       }
     }
+  }
+
+  /* Listen for pot changes and send CCs */
+  pot_val = analogRead(POT_PIN);
+
+  pot_cc_val = pot_val * 127 / POT_MAX;
+  if (pot_cc_val != last_pot_sent) {
+     controlChange(MIDI_CHANNEL, POT_CC, pot_cc_val);
+     last_pot_sent = pot_cc_val; 
   }
 }
 

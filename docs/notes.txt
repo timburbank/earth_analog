@@ -1,0 +1,75 @@
+Foot Control Plans
+
+## Foot Switches
+
+<https://www.musiciansfriend.com/amplifiers-effects/boss-fs-6-footswitch/421384000000000?pfm=item_page.rr1|CategoryTopSellers>
+
+<https://www.ebay.com/p/Heavy-Duty-Cast-Aluminum-Electric-Pedal-AC-250v-15a-SPDT-Momentary-Foot-Switch/7007160795?iid=172925272724>
+
+Nicer colors, but would have to remove guard <https://www.ebay.com/itm/Heavy-Duty-Foot-Switch-Pedal-All-Aluminum-Cast-With-Guard-Industrial-Switch-L2/171823247299>
+
+The normal kind <https://www.ebay.com/itm/DPDT-guitar-effects-pedal-footswitch-true-bypass-mod/162782505640>
+
+Emergency stop button <https://www.ebay.com/itm/Emergency-Stop-660V-10A-Red-Sign-Push-Button-Switch-US-Stock/162833990572>
+
+
+## Lights
+
+Big LED (10mm) <https://www.adafruit.com/product/847>
+
+Pixie 3w RGB LEDs <https://www.adafruit.com/product/2741> Might be awkward form factor but doesn't need a lot of data outputs
+
+8mm LED holders <https://www.adafruit.com/product/2173> (don't think I want them this recessed)
+
+8mm diffuse NeoPixels <https://www.adafruit.com/product/1734>
+
+10mm analog RGB LED <https://www.adafruit.com/product/848> Nice option but I don't thiiiiink I have 3x4 analog outs (nope!)
+
+10mm super bright <https://www.sparkfun.com/products/11119> This is the brightest single color I can find
+
+
+## Microcontrollers
+
+Plain Feather <https://www.adafruit.com/product/2771>
+
+BlueTooth Feather <https://www.adafruit.com/product/2829>
+
+I don't think there's real need for wireless.....there's so much shit plugged in anyways and foot pedals don't need to go far. If it's taking clock sync, accurate timing would be good
+.....I'm gonna do it anyways
+
+Alternative to proto board for connecting feather <https://www.adafruit.com/product/2926>
+
+## References
+
+<https://learn.adafruit.com/mad-science-test-tube-rack?view=all#overview> Uses feather to control analog LEDs
+
+<https://learn.adafruit.com/wireless-untztrument-using-ble-midi?view=all> Bluetooth UNTZtrument
+
+<https://learn.adafruit.com/custom-wireless-bluetooth-cherry-mx-gamepad/software> Maybe useful switch input examples
+
+<https://cdn-learn.adafruit.com/assets/assets/000/046/194/original/Feather_32u4_Bluefruit_v2.3.pdf?1504804907> Feather pin diagram
+
+<https://www.arduino.cc/en/Tutorial/Button> Arduino button input
+
+<https://www.arduino.cc/reference/en/language/functions/analog-io/analogread/> Arduino analogRead() reference
+
+<https://www.arduino.cc/en/Tutorial/ReadAnalogVoltage> Arduino analogRead() tutorial (includes wiring)
+
+<https://www.build-electronic-circuits.com/potentiometer/> Some stuff about potentiometers 
+
+<https://www.dummies.com/programming/c/determining-types-of-numbers-in-c/> Numerical types in C
+
+<https://github.com/arduino-libraries/MIDIUSB> MIDI USB reference 
+## Working Notes
+
+Big LED end goes to + 
+
+Cords going to volume pedal: Shaft is ground (always connected), tip is power (resistance changes).
+
+Splitter: Shaft of stereo plug connects to both connecting wires. Tip of connecting wires goes to tip and ring
+
+Stereo plug: site pins go to ring and tip. They go to power and GPIO. Center pad is shaft which goes to ground
+
+arien doesn't have Bluetooth LE support, which means no Bluetooth MIDI :(
+
+Volume pedal response is not linear, but I don’t think it’s a proper log either. Seems to start slow then switch to quicker at a specific point
